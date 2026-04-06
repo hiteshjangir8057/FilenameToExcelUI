@@ -358,11 +358,21 @@
 
     function clearTable() { tableBody.innerHTML = ""; activeId = null; }
 
-    function exportToExcel() {
-        if(!activeId) return;
-        const wb = XLSX.utils.table_to_book(document.getElementById("dataTable"));
-        XLSX.writeFile(wb, `${excelNameInput.value || 'Data'}.xlsx`);
-    }
+function exportToExcel() {
+    if(!activeId) return;
+
+    // [बदलाव 1]: असली टेबल की एक कॉपी (Clone) बनाई
+    const clone = document.getElementById("dataTable").cloneNode(true);
+
+    // [बदलाव 2]: उस कॉपी में जितने भी <button> (× वाले) थे, उन्हें डिलीट कर दिया
+    // इससे असली वेबसाइट पर बटन नहीं हटेंगे, सिर्फ एक्सेल के लिए हटेंगे
+    clone.querySelectorAll('button').forEach(btn => btn.remove());
+
+    // [बदलाव 3]: अब साफ़ की हुई कॉपी (Clone) से एक्सेल बनाया
+    const wb = XLSX.utils.table_to_book(clone);
+    
+    XLSX.writeFile(wb, `${excelNameInput.value || 'Data'}.xlsx`);
+}
 
     window.onload = renderHistory;
 </script>
