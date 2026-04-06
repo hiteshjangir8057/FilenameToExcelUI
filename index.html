@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FilenameToExcelUI - Data Manage</title>
+    <title>FilenameToExcel</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -48,7 +48,6 @@
             border: 5px dashed white; border-radius: 35px; backdrop-filter: blur(10px);
             pointer-events: none;
         }
-        #dropZone h1 { font-size: 40px; text-transform: uppercase; letter-spacing: 2px; }
 
         .header { 
             display: flex; justify-content: space-between; align-items: center; 
@@ -89,14 +88,13 @@
         .filter-trigger { cursor: pointer; font-size: 20px; opacity: 0.8; transition: 0.2s; padding: 5px; }
         .filter-trigger:hover { transform: scale(1.2); opacity: 1; }
         .col-del { background: none; border: none; color: white; cursor: pointer; font-size: 24px; opacity: 0.5; transition: 0.2s; display: flex; align-items: center; }
-        .col-del:hover { opacity: 1; transform: scale(1.2); }
 
         /* Confirmation Modal */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85);
             display: none; justify-content: center; align-items: center; z-index: 9000; backdrop-filter: blur(8px);
         }
-        .modal-card { background: white; border-radius: 25px; padding: 35px; width: 400px; text-align: center; color: #1e293b; box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
+        .modal-card { background: white; border-radius: 25px; padding: 35px; width: 400px; text-align: center; color: #1e293b; }
         .m-btn { padding: 12px 25px; border-radius: 12px; border: none; cursor: pointer; font-weight: 800; transition: 0.2s; flex: 1; }
 
         /* Filter Menu */
@@ -209,7 +207,6 @@
     const tableHeader = document.getElementById('tableHeader');
     const excelNameInput = document.getElementById('excelName');
 
-    // Folder & File Upload
     document.getElementById('folderInput').addEventListener('change', e => {
         if(e.target.files.length) handleUpload(e.target.files, e.target.files[0].webkitRelativePath.split('/')[0]);
     });
@@ -217,7 +214,6 @@
         if(e.target.files.length) handleUpload(e.target.files, excelNameInput.value || "New_Project");
     });
 
-    // Drag and Drop Bypasses the directory popup in most modern contexts
     window.addEventListener('dragenter', e => { e.preventDefault(); document.getElementById('dropZone').style.display='flex'; });
     document.getElementById('dropZone').addEventListener('dragleave', () => document.getElementById('dropZone').style.display='none');
     window.addEventListener('dragover', e => e.preventDefault());
@@ -279,7 +275,6 @@
             if(count > maxParts) maxParts = count;
         });
 
-        // Headers
         let hHtml = `<th style="width:70px;"><div class="th-content"># <i class="filter-trigger" onclick="openFilter(event, 0)">⋮</i></div></th>`;
         if(showPhotos) hHtml += `<th><div class="th-content">PHOTO</div></th>`;
         for(let i=0; i<maxParts; i++) {
@@ -298,7 +293,6 @@
         hHtml += `<th style="width:280px;">RENAME PREVIEW</th>`;
         tableHeader.innerHTML = hHtml;
 
-        // Rows
         tableBody.innerHTML = "";
         s.files.forEach((f, idx) => {
             const parts = f.n.split(splitRegex);
@@ -316,14 +310,42 @@
             tableBody.appendChild(tr);
         });
 
-        // Audit Panel (Separators)
         document.getElementById('auditPanel').style.display = 'block';
         document.getElementById('symbolList').innerHTML = s.allDetected.map(sym => `
-            <span class="sep-chip ${selectedSeps.includes(sym) ? 'active' : ''}" 
-                  onclick="toggleSep('${sym}')">${sym === ' ' ? 'Space' : sym}</span>
+            <span class="sep-chip ${selectedSeps.includes(sym) ? 'active' : ''}" onclick="toggleSep('${sym}')">${sym === ' ' ? 'Space' : sym}</span>
         `).join('');
 
         renderHistory();
+    }
+
+    function sortTable(type) {
+        const rows = Array.from(tableBody.querySelectorAll('tr'));
+        rows.sort((a, b) => {
+            if (type === 'reset') return a.dataset.origIdx - b.dataset.origIdx;
+            
+            // Text to be compared
+            let valA = a.cells[currentSortCol].innerText.trim().toLowerCase();
+            let valB = b.cells[currentSortCol].innerText.trim().toLowerCase();
+
+            // Number Sorting logic
+            if (type === 'num-asc' || type === 'num-desc') {
+                let nA = parseFloat(valA.replace(/[^0-9.]/g, '')) || 0;
+                let nB = parseFloat(valB.replace(/[^0-9.]/g, '')) || 0;
+                return type === 'num-asc' ? nA - nB : nB - nA;
+            }
+
+            // Updated A to Z Serial Sorting logic
+            if (type === 'alpha') {
+                return valA.localeCompare(valB, 'en', { sensitivity: 'base' });
+            }
+        });
+
+        tableBody.innerHTML = "";
+        rows.forEach((r, i) => {
+            r.cells[0].innerText = i + 1; // Re-index serial number
+            tableBody.appendChild(r);
+        });
+        closeAllMenus();
     }
 
     function toggleSep(sym) {
@@ -345,24 +367,6 @@
         menu.style.display = 'flex';
         menu.style.top = (e.clientY + 10) + 'px';
         menu.style.left = (e.clientX - 160) + 'px';
-    }
-
-    function sortTable(type) {
-        const rows = Array.from(tableBody.querySelectorAll('tr'));
-        rows.sort((a, b) => {
-            if (type === 'reset') return a.dataset.origIdx - b.dataset.origIdx;
-            let valA = a.cells[currentSortCol].innerText.trim();
-            let valB = b.cells[currentSortCol].innerText.trim();
-            if (type === 'num-asc' || type === 'num-desc') {
-                let nA = parseFloat(valA.replace(/[^0-9.]/g, '')) || 0;
-                let nB = parseFloat(valB.replace(/[^0-9.]/g, '')) || 0;
-                return type === 'num-asc' ? nA - nB : nB - nA;
-            }
-            return valA.localeCompare(valB, undefined, {numeric: true});
-        });
-        tableBody.innerHTML = "";
-        rows.forEach((r, i) => { r.cells[0].innerText = i + 1; tableBody.appendChild(r); });
-        closeAllMenus();
     }
 
     function requestDelete(btn) { colToDelete = btn; document.getElementById('confirmModal').style.display = 'flex'; }
