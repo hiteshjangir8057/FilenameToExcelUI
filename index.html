@@ -22,7 +22,6 @@
             color: #fff; transition: background 0.8s ease;
         }
 
-        /* Moving Liquid Background */
         .blob-bg {
             position: absolute; width: 700px; height: 700px;
             background: var(--theme-color); filter: blur(120px);
@@ -40,9 +39,9 @@
             border-radius: 35px; display: flex; flex-direction: column; 
             border: 1px solid rgba(255,255,255,0.15); overflow: hidden;
             box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+            position: relative;
         }
 
-        /* Header */
         .header { 
             display: flex; justify-content: space-between; align-items: center; 
             padding: 15px 35px; background: rgba(0,0,0,0.3);
@@ -54,93 +53,96 @@
             width: 300px; font-size: 14px; outline: none; background: rgba(255,255,255,0.15);
             color: white; font-weight: 700; transition: 0.3s;
         }
-        .session-box input:focus { border-color: white; background: rgba(255,255,255,0.2); }
 
-        /* Toolbar & Liquid Buttons */
-        .toolbar { display: flex; gap: 12px; padding: 15px 35px; background: rgba(0,0,0,0.15); align-items: center; }
+        .toolbar { display: flex; gap: 12px; padding: 15px 35px; background: rgba(0,0,0,0.15); align-items: center; flex-wrap: wrap; }
         
         .btn { 
             padding: 10px 22px; border: none; border-radius: 50px; cursor: pointer; 
             font-weight: 700; color: white; font-size: 12px; display: flex; align-items: center; gap: 8px;
             transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
             background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1);
-            position: relative; overflow: hidden;
         }
-        .btn:hover { transform: scale(1.08) translateY(-2px); background: var(--theme-color); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .btn:hover { transform: scale(1.05); background: var(--theme-color); }
+        .btn.active { background: #fff; color: #000; }
 
         .search-input { 
             flex-grow: 1; padding: 12px 25px; border-radius: 50px; border: none; 
             background: rgba(255,255,255,0.1); color: white; outline: none; font-weight: 600;
         }
 
-        /* Separator Panel */
         #auditPanel { padding: 10px 35px; background: rgba(0,0,0,0.2); border-bottom: 1px solid rgba(255,255,255,0.1); }
         .symbol-tags { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-        .tag-label { font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase; }
-        
-        .sep-chip {
-            padding: 5px 15px; border-radius: 10px; background: rgba(255,255,255,0.1);
-            cursor: pointer; font-family: monospace; font-weight: 800; transition: 0.3s;
-        }
-        .sep-chip.active { background: white; color: black; transform: scale(1.1); }
+        .sep-chip { padding: 5px 15px; border-radius: 10px; background: rgba(255,255,255,0.1); cursor: pointer; font-weight: 800; }
+        .sep-chip.active { background: white; color: black; }
 
-        /* Table */
         .table-area { 
             flex-grow: 1; margin: 15px 25px; border-radius: 25px; 
             background: rgba(255,255,255,0.98); overflow: auto;
             box-shadow: 0 10px 40px rgba(0,0,0,0.3);
         }
-        table { width: 100%; border-collapse: collapse; color: #1e293b; min-width: 100%; }
-        
+        table { width: 100%; border-collapse: collapse; color: #1e293b; }
         thead th { 
             position: sticky; top: 0; padding: 18px 20px; text-align: left; 
-            font-size: 12px; font-weight: 800; text-transform: uppercase;
-            background: var(--theme-color); color: white; z-index: 10;
-            transition: background 0.5s ease;
+            font-size: 12px; font-weight: 800; background: var(--theme-color); color: white; z-index: 10;
         }
+        td { padding: 10px 20px; border-bottom: 1px solid #eef2f6; font-size: 13px; font-weight: 600; color: #334155; vertical-align: middle; }
         
-        .th-content { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-        
-        .col-del { 
-            background: none; border: none; color: rgba(255,255,255,0.6); 
-            cursor: pointer; font-size: 20px; transition: 0.3s;
+        .img-thumb {
+            width: 50px; height: 50px; border-radius: 8px; object-fit: cover;
+            cursor: pointer; border: 2px solid #e2e8f0; transition: 0.3s;
         }
-        .col-del:hover { color: #ff4d4d; transform: scale(1.5) translateY(-2px); }
 
-        td { padding: 14px 20px; border-bottom: 1px solid #eef2f6; font-size: 13px; font-weight: 600; color: #334155; }
-        tr:hover { background: #f1f5f9; }
-        .preview-col { background: #fff1f2 !important; color: #e11d48; font-weight: 800; font-family: 'Courier New', Courier, monospace; }
-
-        /* History Blobs */
-        .history-list { 
-            display: flex; gap: 20px; padding: 25px 35px; 
-            background: rgba(0,0,0,0.4); overflow-x: auto; align-items: center;
+        /* Fixed Popup Styles */
+        .popup-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); display: none; justify-content: center;
+            align-items: center; z-index: 1000; backdrop-filter: blur(10px);
         }
+        .popup-card {
+            background: white; border-radius: 24px; display: flex;
+            max-width: 1000px; width: 95%; max-height: 85vh; overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
+        .popup-img-container { flex: 1.2; background: #000; display: flex; align-items: center; justify-content: center; }
+        .popup-img-container img { max-width: 100%; max-height: 85vh; object-fit: contain; }
+        .popup-info { flex: 0.8; padding: 30px; overflow-y: auto; color: #1e293b; background: #ffffff; border-left: 1px solid #eee; }
+        .popup-info h3 { margin-bottom: 20px; color: var(--theme-color); font-size: 20px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; }
+        .info-row { margin-bottom: 12px; background: #f8fafc; padding: 10px 15px; border-radius: 12px; border-left: 4px solid var(--theme-color); }
+        .info-label { display: block; font-size: 10px; color: #64748b; text-transform: uppercase; font-weight: 800; margin-bottom: 2px; }
+        .info-val { font-size: 14px; font-weight: 700; color: #0f172a; word-break: break-word; }
+
+        /* Fixed History Box Styles */
+        .history-list { display: flex; gap: 20px; padding: 25px 35px; background: rgba(0,0,0,0.4); overflow-x: auto; min-height: 150px; }
         .history-item { 
-            min-width: 200px; padding: 18px 25px; cursor: pointer; 
-            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            display: flex; flex-direction: column; border: 2px solid rgba(255,255,255,0.2); 
-            position: relative; animation: wobble 6s infinite ease-in-out;
+            min-width: 240px; max-width: 240px; padding: 20px; cursor: pointer; 
+            border-radius: 20px; border: 2px solid rgba(255,255,255,0.2); 
+            position: relative; display: flex; flex-direction: column; justify-content: center;
+            transition: 0.3s; background-clip: padding-box;
         }
-        @keyframes wobble {
-            0%, 100% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
-            50% { border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%; }
-        }
-        .history-item:hover { transform: translateY(-12px) scale(1.05); border-color: #fff; z-index: 5; }
-        .history-item b { font-size: 16px; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .history-item small { color: rgba(255,255,255,0.8); font-size: 11px; margin-top: 5px; font-weight: 700; }
+        .history-item:hover { transform: translateY(-5px); border-color: #fff; }
+        .history-item b { font-size: 16px; color: #fff; display: block; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .history-item small { color: rgba(255,255,255,0.9); font-size: 11px; font-weight: 600; line-height: 1.4; }
+        .del-history { position: absolute; top: 10px; right: 12px; font-size: 22px; color: #fff; opacity: 0.6; cursor: pointer; }
+        .del-history:hover { opacity: 1; color: #ff4d4d; }
 
-        .del-history { position: absolute; top: 8px; right: 15px; color: #fff; opacity: 0.5; font-size: 20px; transition: 0.3s; }
-        .del-history:hover { opacity: 1; color: #ff4d4d; transform: scale(1.3); }
-
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 10px; }
+        .preview-col { background: #fff1f2 !important; color: #e11d48; font-weight: 800; }
+        .th-content { display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 5px; }
+        .col-del { background: none; border: none; color: rgba(255,255,255,0.6); cursor: pointer; font-size: 18px; }
     </style>
 </head>
 <body>
 
 <div class="blob-bg" id="mainBlob"></div>
+
+<!-- Image Popup -->
+<div class="popup-overlay" id="imagePopup" onclick="closePopup(event)">
+    <div class="popup-card" onclick="event.stopPropagation()">
+        <div class="popup-img-container">
+            <img id="largeImage" src="" alt="Full View">
+        </div>
+        <div class="popup-info" id="popupInfo"></div>
+    </div>
+</div>
 
 <div class="app-container">
     <div class="header">
@@ -157,6 +159,7 @@
         <label class="btn" style="background: #9333ea;">
             <span>📄</span> Files <input type="file" id="fileInput" multiple style="display:none">
         </label>
+        <button class="btn" id="togglePhotoBtn" style="background:#0ea5e9" onclick="togglePhotoMode()">🖼️ Show Photos</button>
         <button class="btn" style="background:#334155" onclick="addNewColumn()">+ Add Column</button>
         <input type="text" id="searchBox" class="search-input" onkeyup="searchData()" placeholder="Filter through your data...">
         <button class="btn" style="background:#22c55e" onclick="exportToExcel()">📊 Export XLSX</button>
@@ -189,26 +192,32 @@
 <script>
     let activeId = null;
     let selectedSeps = ['_'];
+    let showPhotos = false;
+    let fileMemory = {}; 
+
     const tableBody = document.getElementById('tableBody');
     const tableHeader = document.getElementById('tableHeader');
     const excelNameInput = document.getElementById('excelName');
 
-    // Folder & File Upload
-    document.getElementById('folderInput').addEventListener('change', e => {
-        const files = e.target.files;
-        if(files.length) processData(files, files[0].webkitRelativePath.split('/')[0]);
-    });
+    document.getElementById('folderInput').addEventListener('change', e => handleUpload(e.target.files, e.target.files[0].webkitRelativePath.split('/')[0]));
+    document.getElementById('fileInput').addEventListener('change', e => handleUpload(e.target.files, excelNameInput.value || "New_Project"));
 
-    document.getElementById('fileInput').addEventListener('change', e => {
-        const files = e.target.files;
-        if(files.length) processData(files, excelNameInput.value || "New_Project");
-    });
+    function handleUpload(files, sName) {
+        if(!files.length) return;
+        Array.from(files).forEach(file => {
+            if(file.type.startsWith('image/')) {
+                fileMemory[file.name] = URL.createObjectURL(file);
+            }
+        });
+        processData(files, sName);
+    }
 
     function processData(files, sName) {
         const newId = Date.now();
         const entries = Array.from(files).map(f => ({
             n: f.name.replace(/\.[^/.]+$/, ""),
-            e: f.name.includes('.') ? f.name.split('.').pop() : ""
+            e: f.name.includes('.') ? f.name.split('.').pop() : "",
+            full: f.name
         }));
 
         let syms = new Set(['_', '-', ' ']);
@@ -219,7 +228,7 @@
 
         const session = {
             id: newId, name: sName, 
-            color: `hsl(${Math.floor(Math.random() * 360)}, 75%, 55%)`,
+            color: `hsl(${Math.floor(Math.random() * 360)}, 75%, 45%)`,
             headers: ["ROLL NO", "STUDENT NAME", "FATHER NAME", "VILLAGE"],
             files: entries, seps: ['_'], allDetected: Array.from(syms), 
             date: new Date().toLocaleDateString()
@@ -229,6 +238,14 @@
         db.unshift(session);
         localStorage.setItem('liquid_ultra_db', JSON.stringify(db));
         loadSession(newId);
+    }
+
+    function togglePhotoMode() {
+        showPhotos = !showPhotos;
+        const btn = document.getElementById('togglePhotoBtn');
+        btn.innerHTML = showPhotos ? "📄 Hide Photos" : "🖼️ Show Photos";
+        btn.classList.toggle('active', showPhotos);
+        if(activeId) loadSession(activeId);
     }
 
     function loadSession(id) {
@@ -243,15 +260,14 @@
         const escaped = selectedSeps.map(sep => sep.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
         const splitRegex = new RegExp(escaped, 'g');
 
-        // Dynamic Columns Calculation
         let maxParts = 1;
         s.files.forEach(f => {
             const count = f.n.split(splitRegex).length;
             if(count > maxParts) maxParts = count;
         });
 
-        // Build Header
         let hHtml = `<th style="width:60px;">#</th>`;
+        if(showPhotos) hHtml += `<th style="width:80px;">PHOTO</th>`;
         for(let i=0; i<maxParts; i++) {
             let title = s.headers[i] || `FIELD ${i+1}`;
             hHtml += `<th><div class="th-content"><span contenteditable="true" oninput="autoSave()">${title}</span><button class="col-del" onclick="deleteColumn(this)">×</button></div></th>`;
@@ -259,40 +275,71 @@
         hHtml += `<th style="width:280px;">RENAME PREVIEW</th>`;
         tableHeader.innerHTML = hHtml;
 
-        // Build Table Rows
         tableBody.innerHTML = "";
-        s.files.forEach(f => {
+        s.files.forEach((f, idx) => {
             const parts = f.n.split(splitRegex);
             const tr = document.createElement('tr');
-            let rowHtml = `<td style="color:#94a3b8; font-weight:800; text-align:center;"></td>`;
+            
+            let rowHtml = `<td style="color:#94a3b8; font-weight:800; text-align:center;">${idx+1}</td>`;
+            
+            if(showPhotos) {
+                const imgSrc = fileMemory[f.full] || 'https://via.placeholder.com/50?text=No+Img';
+                rowHtml += `<td><img src="${imgSrc}" class="img-thumb" onclick="openPopup(this)"></td>`;
+            }
+
             for(let i=0; i<maxParts; i++) rowHtml += `<td>${parts[i] || ""}</td>`;
+            
             const preview = parts.filter(p => p.trim() !== "").join(selectedSeps[0] || "_") + (f.e ? "." + f.e : "");
             rowHtml += `<td class="preview-col">${preview}</td>`;
+            
             tr.innerHTML = rowHtml;
             tableBody.appendChild(tr);
         });
 
-        // Show Audit Panel
         document.getElementById('auditPanel').style.display = 'block';
         document.getElementById('symbolList').innerHTML = s.allDetected.map(sym => `
             <span class="sep-chip ${selectedSeps.includes(sym) ? 'active' : ''}" 
                   onclick="toggleSep('${sym}')">${sym === ' ' ? 'Space' : sym}</span>
         `).join('');
 
-        updateSN();
         renderHistory();
     }
 
-    function toggleSep(sym) {
-        let db = JSON.parse(localStorage.getItem('liquid_ultra_db') || "[]");
-        const idx = db.findIndex(s => s.id === activeId);
-        if(idx !== -1) {
-            let list = db[idx].seps || [];
-            list.includes(sym) ? list = list.filter(s => s !== sym) : list.push(sym);
-            db[idx].seps = list;
-            localStorage.setItem('liquid_ultra_db', JSON.stringify(db));
-            loadSession(activeId);
-        }
+    // Fixed Popup Data Logic
+    function openPopup(imgElement) {
+        const popup = document.getElementById('imagePopup');
+        const largeImg = document.getElementById('largeImage');
+        const infoBox = document.getElementById('popupInfo');
+        
+        largeImg.src = imgElement.src;
+        
+        const targetRow = imgElement.closest('tr');
+        const headerCells = Array.from(tableHeader.cells);
+        const rowCells = Array.from(targetRow.cells);
+
+        let infoHtml = `<h3>File Details</h3>`;
+        
+        // Loop through cells and match with headers exactly
+        headerCells.forEach((th, index) => {
+            const headerText = th.querySelector('span') ? th.querySelector('span').innerText : th.innerText;
+            const cellValue = rowCells[index].innerText;
+
+            // Skip index, photo, and rename preview columns
+            if(headerText !== "#" && headerText !== "PHOTO" && headerText !== "RENAME PREVIEW" && headerText !== "×") {
+                infoHtml += `
+                    <div class="info-row">
+                        <span class="info-label">${headerText}</span>
+                        <span class="info-val">${cellValue || '---'}</span>
+                    </div>`;
+            }
+        });
+
+        infoBox.innerHTML = infoHtml;
+        popup.style.display = 'flex';
+    }
+
+    function closePopup() {
+        document.getElementById('imagePopup').style.display = 'none';
     }
 
     function deleteColumn(btn) {
@@ -318,7 +365,7 @@
     function exportToExcel() {
         if(!activeId) return;
         const clone = document.getElementById("dataTable").cloneNode(true);
-        clone.querySelectorAll('button').forEach(b => b.remove()); // Clean export
+        clone.querySelectorAll('button, .img-thumb').forEach(el => el.remove());
         XLSX.writeFile(XLSX.utils.table_to_book(clone), `${excelNameInput.value}.xlsx`);
     }
 
@@ -329,7 +376,10 @@
             <div class="history-item" style="background:${s.color}" onclick="loadSession(${s.id})">
                 <span class="del-history" onclick="removeHistory(event, ${s.id})">×</span>
                 <b>${s.name}</b>
-                <small>📅 ${s.date} | 📂 ${s.files.length} Files</small>
+                <small>
+                    📅 ${s.date}<br>
+                    📂 ${s.files.length} Files Total
+                </small>
             </div>
         `).join('');
     }
@@ -353,12 +403,29 @@
         }
     }
 
-    function updateSN() { Array.from(tableBody.querySelectorAll('tr')).forEach((r, i) => r.cells[0].innerText = i + 1); }
+    function toggleSep(sym) {
+        let db = JSON.parse(localStorage.getItem('liquid_ultra_db') || "[]");
+        const idx = db.findIndex(s => s.id === activeId);
+        if(idx !== -1) {
+            let list = db[idx].seps || [];
+            list.includes(sym) ? list = list.filter(s => s !== sym) : list.push(sym);
+            db[idx].seps = list;
+            localStorage.setItem('liquid_ultra_db', JSON.stringify(db));
+            loadSession(activeId);
+        }
+    }
+
     function searchData() {
         const q = document.getElementById('searchBox').value.toLowerCase();
         Array.from(tableBody.querySelectorAll('tr')).forEach(tr => tr.style.display = tr.innerText.toLowerCase().includes(q) ? "" : "none");
     }
-    function clearTable() { tableBody.innerHTML = ""; activeId = null; document.getElementById('auditPanel').style.display='none'; }
+
+    function clearTable() { 
+        tableBody.innerHTML = ""; 
+        activeId = null; 
+        document.getElementById('auditPanel').style.display='none'; 
+        fileMemory = {};
+    }
 
     window.onload = renderHistory;
 </script>
