@@ -1,0 +1,370 @@
+
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liquid Pro - Dynamic Data Studio</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --theme-color: #6366f1; /* Dynamic Theme Color */
+            --glass: rgba(255, 255, 255, 0.08);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: #0f172a;
+            height: 100vh; 
+            overflow: hidden; 
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            transition: background 0.8s ease;
+        }
+
+        /* Animated Liquid Background */
+        .blob-bg {
+            position: absolute;
+            width: 700px; height: 700px;
+            background: var(--theme-color);
+            filter: blur(120px);
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0.4;
+            transition: all 1s ease;
+            animation: move 15s infinite alternate;
+        }
+
+        @keyframes move {
+            from { transform: translate(-20%, -20%) scale(1); }
+            to { transform: translate(20%, 20%) scale(1.2); }
+        }
+
+        .app-container { 
+            width: 100%; max-width: 1500px; height: 95vh; 
+            background: var(--glass);
+            backdrop-filter: blur(30px);
+            border-radius: 35px;
+            display: flex; flex-direction: column; 
+            border: 1px solid rgba(255,255,255,0.15);
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+        }
+
+        /* Liquid Header */
+        .header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 15px 35px; background: rgba(0,0,0,0.2);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .brand { 
+            font-size: 22px; font-weight: 800; color: #fff;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .session-box input { 
+            padding: 10px 20px; border: 1px solid rgba(255,255,255,0.2); border-radius: 15px; 
+            width: 250px; font-size: 14px; outline: none; background: rgba(255,255,255,0.1);
+            color: white; font-weight: 600;
+        }
+
+        /* Toolbar & Liquid Buttons */
+        .toolbar { display: flex; gap: 12px; padding: 15px 35px; background: rgba(0,0,0,0.1); align-items: center; }
+        
+        .btn { 
+            padding: 10px 20px; border: none; border-radius: 50px; cursor: pointer; 
+            font-weight: 700; color: white; font-size: 12px; display: flex; align-items: center; gap: 8px;
+            transition: 0.4s; position: relative; overflow: hidden;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .btn:hover { transform: scale(1.05); background: var(--theme-color); }
+
+        .btn-green { background: #22c55e; }
+        .btn-red { background: #ef4444; }
+
+        .search-input { 
+            flex-grow: 1; padding: 10px 20px; border-radius: 50px; border: none; 
+            background: rgba(255,255,255,0.1); color: white; outline: none;
+        }
+
+        /* Responsive Liquid Table */
+        .table-area { 
+            flex-grow: 1; margin: 10px 25px; border-radius: 20px; 
+            background: rgba(255,255,255,0.98); overflow: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        table { width: 100%; border-collapse: collapse; color: #1e293b; min-width: 100%; }
+        
+        thead th { 
+            position: sticky; top: 0; padding: 15px; text-align: left; 
+            font-size: 11px; font-weight: 800; text-transform: uppercase;
+            background: var(--theme-color); color: white; /* Color Syncs here */
+            transition: background 0.5s ease;
+        }
+        
+        td { padding: 12px 15px; border-bottom: 1px solid #eef2f6; font-size: 13px; font-weight: 500; }
+        tr:hover { background: #f8fafc; }
+        
+        .preview-col { background: #fff1f2 !important; color: #e11d48; font-weight: 700; font-family: monospace; }
+        .col-del { background: none; border: none; color: #fff; cursor: pointer; margin-left: 5px; font-weight: bold; }
+
+        /* Liquid History - Improved Visibility */
+        .history-list { 
+            display: flex; gap: 20px; padding: 20px 35px; 
+            background: rgba(0,0,0,0.3); overflow-x: auto; align-items: center;
+        }
+        
+        .history-item { 
+            min-width: 180px; padding: 15px 20px; cursor: pointer; 
+            border-radius: 20px 50px 20px 50px; /* Liquid Blob Shape */
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; flex-direction: column; border: 2px solid rgba(255,255,255,0.2);
+            position: relative; animation: wobble 5s infinite ease-in-out;
+        }
+        
+        @keyframes wobble {
+            0%, 100% { border-radius: 20px 50px 20px 50px; }
+            50% { border-radius: 50px 20px 50px 20px; }
+        }
+
+        .history-item:hover { transform: translateY(-10px) scale(1.05); border-color: #fff; }
+        .history-item b { font-size: 15px; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .history-item small { color: rgba(255,255,255,0.9); font-size: 11px; font-weight: 700; margin-top: 5px; }
+
+        .del-history { 
+            position: absolute; top: 5px; right: 10px; color: #fff; 
+            font-size: 20px; opacity: 0.5; transition: 0.3s;
+        }
+        .del-history:hover { opacity: 1; color: #ff4d4d; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="blob-bg" id="mainBlob"></div>
+
+<div class="app-container">
+    <div class="header">
+        <div class="brand">Liquid Studio PRO</div>
+        <div class="session-box">
+            <input type="text" id="excelName" placeholder="Untitled Session" oninput="autoSave()">
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <label class="btn">
+            <span>📂</span> Folder <input type="file" id="folderInput" webkitdirectory directory multiple style="display:none">
+        </label>
+        <label class="btn">
+            <span>📄</span> Files <input type="file" id="fileInput" multiple style="display:none">
+        </label>
+        <button class="btn" onclick="addNewColumn()">+ Add Field</button>
+        <input type="text" id="searchBox" class="search-input" onkeyup="searchData()" placeholder="Search in table...">
+        <button class="btn btn-green" onclick="exportToExcel()">📊 Export XLSX</button>
+        <button class="btn btn-red" onclick="clearTable()">🗑️ Reset</button>
+    </div>
+
+    <div id="auditPanel" style="padding: 0 35px 10px 35px; background: rgba(0,0,0,0.1); display:none;">
+        <div id="symbolList" style="display:flex; gap:10px; flex-wrap:wrap;"></div>
+    </div>
+
+    <div class="table-area">
+        <table id="dataTable">
+            <thead id="tableHead">
+                <tr id="tableHeader">
+                    <th style="width:50px;">#</th>
+                    <th contenteditable="true">FIELD 1 <button class="col-del" onclick="deleteColumn(this)">×</button></th>
+                    <th style="width:250px;">PREVIEW</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+
+    <div class="history-list" id="historyList"></div>
+</div>
+
+<script>
+    let activeId = null;
+    let selectedSeps = ['_'];
+    const tableBody = document.getElementById('tableBody');
+    const tableHeader = document.getElementById('tableHeader');
+    const excelNameInput = document.getElementById('excelName');
+
+    // Folder & File Upload
+    document.getElementById('folderInput').addEventListener('change', e => {
+        const files = e.target.files;
+        if(files.length) processData(files, files[0].webkitRelativePath.split('/')[0]);
+    });
+
+    document.getElementById('fileInput').addEventListener('change', e => {
+        const files = e.target.files;
+        if(files.length) processData(files, excelNameInput.value || "Files_Export");
+    });
+
+    function processData(files, sName) {
+        const newId = Date.now();
+        const entries = Array.from(files).map(f => ({
+            n: f.name.replace(/\.[^/.]+$/, ""),
+            e: f.name.includes('.') ? f.name.split('.').pop() : ""
+        }));
+
+        let syms = new Set(['_']);
+        entries.forEach(f => {
+            const m = f.n.match(/[^a-zA-Z0-9\s_]/g);
+            if(m) m.forEach(s => syms.add(s));
+        });
+
+        const randomColor = `hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`;
+
+        const session = {
+            id: newId, name: sName, color: randomColor,
+            files: entries, seps: ['_'], allDetected: Array.from(syms), 
+            date: new Date().toLocaleDateString()
+        };
+
+        let db = JSON.parse(localStorage.getItem('liquid_pro_db') || "[]");
+        db.unshift(session);
+        localStorage.setItem('liquid_pro_db', JSON.stringify(db));
+        loadSession(newId);
+    }
+
+    function loadSession(id) {
+        const db = JSON.parse(localStorage.getItem('liquid_pro_db') || "[]");
+        const s = db.find(item => item.id === id);
+        if(!s) return;
+
+        activeId = id; selectedSeps = s.seps || ['_'];
+        excelNameInput.value = s.name;
+
+        // Change Theme Color Everywhere
+        document.documentElement.style.setProperty('--theme-color', s.color);
+
+        const escaped = selectedSeps.map(sep => sep.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+        const splitRegex = new RegExp(escaped, 'g');
+
+        // Logic: Find max split parts to create columns
+        let maxParts = 1;
+        s.files.forEach(f => {
+            const count = f.n.split(splitRegex).length;
+            if(count > maxParts) maxParts = count;
+        });
+
+        // Rebuild Header Dynamically
+        let headerHtml = `<th style="width:50px;">#</th>`;
+        for(let i=1; i<=maxParts; i++) {
+            headerHtml += `<th contenteditable="true">FIELD ${i} <button class="col-del" onclick="deleteColumn(this)">×</button></th>`;
+        }
+        headerHtml += `<th style="width:250px;">RENAME PREVIEW</th>`;
+        tableHeader.innerHTML = headerHtml;
+
+        // Build Body
+        tableBody.innerHTML = "";
+        s.files.forEach(f => {
+            const parts = f.n.split(splitRegex);
+            const tr = document.createElement('tr');
+            let rowHtml = `<td style="color:#94a3b8; font-weight:800; text-align:center;"></td>`;
+            
+            for(let i=0; i<maxParts; i++) {
+                rowHtml += `<td contenteditable="true">${parts[i] || ""}</td>`;
+            }
+
+            const previewName = parts.filter(p => p.trim() !== "").join(selectedSeps[0] || "_") + (f.e ? "." + f.e : "");
+            rowHtml += `<td class="preview-col">${previewName}</td>`;
+            tr.innerHTML = rowHtml;
+            tableBody.appendChild(tr);
+        });
+
+        document.getElementById('auditPanel').style.display = 'block';
+        document.getElementById('symbolList').innerHTML = s.allDetected.map(sym => `
+            <span class="btn ${selectedSeps.includes(sym) ? 'active' : ''}" 
+                  style="background:${selectedSeps.includes(sym) ? 'white' : 'rgba(255,255,255,0.1)'}; color:${selectedSeps.includes(sym) ? '#000' : '#fff'}"
+                  onclick="toggleSep('${sym}')">${sym === ' ' ? 'Space' : sym}</span>
+        `).join('');
+
+        updateSN();
+        renderHistory();
+    }
+
+    function toggleSep(sym) {
+        let db = JSON.parse(localStorage.getItem('liquid_pro_db') || "[]");
+        const idx = db.findIndex(s => s.id === activeId);
+        if(idx !== -1) {
+            let list = db[idx].seps || [];
+            if(list.includes(sym)) list = list.filter(s => s !== sym);
+            else list.push(sym);
+            db[idx].seps = list;
+            localStorage.setItem('liquid_pro_db', JSON.stringify(db));
+            loadSession(activeId);
+        }
+    }
+
+    function updateSN() {
+        Array.from(tableBody.querySelectorAll('tr')).forEach((r, i) => r.cells[0].innerText = i + 1);
+    }
+
+    function deleteColumn(btn) {
+        const idx = btn.parentElement.cellIndex;
+        btn.parentElement.remove();
+        Array.from(tableBody.querySelectorAll('tr')).forEach(tr => tr.deleteCell(idx));
+    }
+
+    function addNewColumn() {
+        const th = document.createElement('th');
+        th.contentEditable = true;
+        th.innerHTML = `NEW FIELD <button class="col-del" onclick="deleteColumn(this)">×</button>`;
+        tableHeader.insertBefore(th, tableHeader.lastElementChild);
+        Array.from(tableBody.querySelectorAll('tr')).forEach(tr => {
+            const td = document.createElement('td');
+            td.contentEditable = true;
+            tr.insertBefore(td, tr.lastElementChild);
+        });
+    }
+
+    function renderHistory() {
+        const list = document.getElementById('historyList');
+        const db = JSON.parse(localStorage.getItem('liquid_pro_db') || "[]");
+        list.innerHTML = db.map(s => `
+            <div class="history-item" style="background:${s.color}" onclick="loadSession(${s.id})">
+                <span class="del-history" onclick="removeHistory(event, ${s.id})">×</span>
+                <b>${s.name}</b>
+                <small>📅 ${s.date} | 📂 ${s.files.length} Items</small>
+            </div>
+        `).join('');
+    }
+
+    function removeHistory(e, id) {
+        e.stopPropagation();
+        const db = JSON.parse(localStorage.getItem('liquid_pro_db') || "[]").filter(s => s.id !== id);
+        localStorage.setItem('liquid_pro_db', JSON.stringify(db));
+        if(activeId === id) location.reload();
+        renderHistory();
+    }
+
+    function searchData() {
+        const q = document.getElementById('searchBox').value.toLowerCase();
+        Array.from(tableBody.querySelectorAll('tr')).forEach(tr => tr.style.display = tr.innerText.toLowerCase().includes(q) ? "" : "none");
+    }
+
+    function clearTable() { tableBody.innerHTML = ""; activeId = null; }
+
+    function exportToExcel() {
+        if(!activeId) return;
+        const wb = XLSX.utils.table_to_book(document.getElementById("dataTable"));
+        XLSX.writeFile(wb, `${excelNameInput.value || 'Data'}.xlsx`);
+    }
+
+    window.onload = renderHistory;
+</script>
+</body>
+</html>
