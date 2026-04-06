@@ -1,16 +1,15 @@
-
 <!DOCTYPE html>
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liquid Pro - Dynamic Data Studio</title>
+    <title>FilenameToExcelUI - Data Manage</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #6366f1;
-            --theme-color: #6366f1; /* Dynamic Theme Color */
+            --theme-color: #6366f1;
             --glass: rgba(255, 255, 255, 0.08);
         }
 
@@ -18,135 +17,125 @@
         
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: #0f172a;
-            height: 100vh; 
-            overflow: hidden; 
-            padding: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #fff;
-            transition: background 0.8s ease;
+            background: #0f172a; height: 100vh; overflow: hidden; padding: 15px;
+            display: flex; justify-content: center; align-items: center;
+            color: #fff; transition: background 0.8s ease;
         }
 
-        /* Animated Liquid Background */
+        /* Moving Liquid Background */
         .blob-bg {
-            position: absolute;
-            width: 700px; height: 700px;
-            background: var(--theme-color);
-            filter: blur(120px);
-            border-radius: 50%;
-            z-index: -1;
-            opacity: 0.4;
-            transition: all 1s ease;
-            animation: move 15s infinite alternate;
+            position: absolute; width: 700px; height: 700px;
+            background: var(--theme-color); filter: blur(120px);
+            border-radius: 50%; z-index: -1; opacity: 0.4;
+            transition: all 1s ease; animation: move 15s infinite alternate;
         }
-
         @keyframes move {
             from { transform: translate(-20%, -20%) scale(1); }
-            to { transform: translate(20%, 20%) scale(1.2); }
+            to { transform: translate(20%, 20%) scale(1.3); }
         }
 
         .app-container { 
             width: 100%; max-width: 1500px; height: 95vh; 
-            background: var(--glass);
-            backdrop-filter: blur(30px);
-            border-radius: 35px;
-            display: flex; flex-direction: column; 
-            border: 1px solid rgba(255,255,255,0.15);
-            overflow: hidden;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+            background: var(--glass); backdrop-filter: blur(30px);
+            border-radius: 35px; display: flex; flex-direction: column; 
+            border: 1px solid rgba(255,255,255,0.15); overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.5);
         }
 
-        /* Liquid Header */
+        /* Header */
         .header { 
             display: flex; justify-content: space-between; align-items: center; 
-            padding: 15px 35px; background: rgba(0,0,0,0.2);
+            padding: 15px 35px; background: rgba(0,0,0,0.3);
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }
-        .brand { 
-            font-size: 22px; font-weight: 800; color: #fff;
-            text-transform: uppercase; letter-spacing: 1px;
-        }
+        .brand { font-size: 24px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: white; }
         .session-box input { 
-            padding: 10px 20px; border: 1px solid rgba(255,255,255,0.2); border-radius: 15px; 
-            width: 250px; font-size: 14px; outline: none; background: rgba(255,255,255,0.1);
-            color: white; font-weight: 600;
+            padding: 12px 20px; border: 1px solid rgba(255,255,255,0.2); border-radius: 15px; 
+            width: 300px; font-size: 14px; outline: none; background: rgba(255,255,255,0.15);
+            color: white; font-weight: 700; transition: 0.3s;
         }
+        .session-box input:focus { border-color: white; background: rgba(255,255,255,0.2); }
 
         /* Toolbar & Liquid Buttons */
-        .toolbar { display: flex; gap: 12px; padding: 15px 35px; background: rgba(0,0,0,0.1); align-items: center; }
+        .toolbar { display: flex; gap: 12px; padding: 15px 35px; background: rgba(0,0,0,0.15); align-items: center; }
         
         .btn { 
-            padding: 10px 20px; border: none; border-radius: 50px; cursor: pointer; 
+            padding: 10px 22px; border: none; border-radius: 50px; cursor: pointer; 
             font-weight: 700; color: white; font-size: 12px; display: flex; align-items: center; gap: 8px;
-            transition: 0.4s; position: relative; overflow: hidden;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.1);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1);
+            position: relative; overflow: hidden;
         }
-        .btn:hover { transform: scale(1.05); background: var(--theme-color); }
-
-        .btn-green { background: #22c55e; }
-        .btn-red { background: #ef4444; }
+        .btn:hover { transform: scale(1.08) translateY(-2px); background: var(--theme-color); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
 
         .search-input { 
-            flex-grow: 1; padding: 10px 20px; border-radius: 50px; border: none; 
-            background: rgba(255,255,255,0.1); color: white; outline: none;
+            flex-grow: 1; padding: 12px 25px; border-radius: 50px; border: none; 
+            background: rgba(255,255,255,0.1); color: white; outline: none; font-weight: 600;
         }
 
-        /* Responsive Liquid Table */
+        /* Separator Panel */
+        #auditPanel { padding: 10px 35px; background: rgba(0,0,0,0.2); border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .symbol-tags { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .tag-label { font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase; }
+        
+        .sep-chip {
+            padding: 5px 15px; border-radius: 10px; background: rgba(255,255,255,0.1);
+            cursor: pointer; font-family: monospace; font-weight: 800; transition: 0.3s;
+        }
+        .sep-chip.active { background: white; color: black; transform: scale(1.1); }
+
+        /* Table */
         .table-area { 
-            flex-grow: 1; margin: 10px 25px; border-radius: 20px; 
+            flex-grow: 1; margin: 15px 25px; border-radius: 25px; 
             background: rgba(255,255,255,0.98); overflow: auto;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
         }
         table { width: 100%; border-collapse: collapse; color: #1e293b; min-width: 100%; }
         
         thead th { 
-            position: sticky; top: 0; padding: 15px; text-align: left; 
-            font-size: 11px; font-weight: 800; text-transform: uppercase;
-            background: var(--theme-color); color: white; /* Color Syncs here */
+            position: sticky; top: 0; padding: 18px 20px; text-align: left; 
+            font-size: 12px; font-weight: 800; text-transform: uppercase;
+            background: var(--theme-color); color: white; z-index: 10;
             transition: background 0.5s ease;
         }
         
-        td { padding: 12px 15px; border-bottom: 1px solid #eef2f6; font-size: 13px; font-weight: 500; }
-        tr:hover { background: #f8fafc; }
+        .th-content { display: flex; justify-content: space-between; align-items: center; width: 100%; }
         
-        .preview-col { background: #fff1f2 !important; color: #e11d48; font-weight: 700; font-family: monospace; }
-        .col-del { background: none; border: none; color: #fff; cursor: pointer; margin-left: 5px; font-weight: bold; }
+        .col-del { 
+            background: none; border: none; color: rgba(255,255,255,0.6); 
+            cursor: pointer; font-size: 20px; transition: 0.3s;
+        }
+        .col-del:hover { color: #ff4d4d; transform: scale(1.5) translateY(-2px); }
 
-        /* Liquid History - Improved Visibility */
+        td { padding: 14px 20px; border-bottom: 1px solid #eef2f6; font-size: 13px; font-weight: 600; color: #334155; }
+        tr:hover { background: #f1f5f9; }
+        .preview-col { background: #fff1f2 !important; color: #e11d48; font-weight: 800; font-family: 'Courier New', Courier, monospace; }
+
+        /* History Blobs */
         .history-list { 
-            display: flex; gap: 20px; padding: 20px 35px; 
-            background: rgba(0,0,0,0.3); overflow-x: auto; align-items: center;
+            display: flex; gap: 20px; padding: 25px 35px; 
+            background: rgba(0,0,0,0.4); overflow-x: auto; align-items: center;
         }
-        
         .history-item { 
-            min-width: 180px; padding: 15px 20px; cursor: pointer; 
-            border-radius: 20px 50px 20px 50px; /* Liquid Blob Shape */
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex; flex-direction: column; border: 2px solid rgba(255,255,255,0.2);
-            position: relative; animation: wobble 5s infinite ease-in-out;
+            min-width: 200px; padding: 18px 25px; cursor: pointer; 
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            display: flex; flex-direction: column; border: 2px solid rgba(255,255,255,0.2); 
+            position: relative; animation: wobble 6s infinite ease-in-out;
         }
-        
         @keyframes wobble {
-            0%, 100% { border-radius: 20px 50px 20px 50px; }
-            50% { border-radius: 50px 20px 50px 20px; }
+            0%, 100% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+            50% { border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%; }
         }
+        .history-item:hover { transform: translateY(-12px) scale(1.05); border-color: #fff; z-index: 5; }
+        .history-item b { font-size: 16px; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .history-item small { color: rgba(255,255,255,0.8); font-size: 11px; margin-top: 5px; font-weight: 700; }
 
-        .history-item:hover { transform: translateY(-10px) scale(1.05); border-color: #fff; }
-        .history-item b { font-size: 15px; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
-        .history-item small { color: rgba(255,255,255,0.9); font-size: 11px; font-weight: 700; margin-top: 5px; }
+        .del-history { position: absolute; top: 8px; right: 15px; color: #fff; opacity: 0.5; font-size: 20px; transition: 0.3s; }
+        .del-history:hover { opacity: 1; color: #ff4d4d; transform: scale(1.3); }
 
-        .del-history { 
-            position: absolute; top: 5px; right: 10px; color: #fff; 
-            font-size: 20px; opacity: 0.5; transition: 0.3s;
-        }
-        .del-history:hover { opacity: 1; color: #ff4d4d; }
-
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -157,33 +146,36 @@
     <div class="header">
         <div class="brand">FilenameToExcel</div>
         <div class="session-box">
-            <input type="text" id="excelName" placeholder="Untitled Session" oninput="autoSave()">
+            <input type="text" id="excelName" placeholder="Project Name..." oninput="autoSave()">
         </div>
     </div>
 
     <div class="toolbar">
-        <label class="btn">
+        <label class="btn" style="background: #4f46e5;">
             <span>📂</span> Folder <input type="file" id="folderInput" webkitdirectory directory multiple style="display:none">
         </label>
-        <label class="btn">
+        <label class="btn" style="background: #9333ea;">
             <span>📄</span> Files <input type="file" id="fileInput" multiple style="display:none">
         </label>
-        <button class="btn" onclick="addNewColumn()">+ Add Field</button>
-        <input type="text" id="searchBox" class="search-input" onkeyup="searchData()" placeholder="Search in table...">
-        <button class="btn btn-green" onclick="exportToExcel()">📊 Export XLSX</button>
-        <button class="btn btn-red" onclick="clearTable()">🗑️ Reset</button>
+        <button class="btn" style="background:#334155" onclick="addNewColumn()">+ Add Column</button>
+        <input type="text" id="searchBox" class="search-input" onkeyup="searchData()" placeholder="Filter through your data...">
+        <button class="btn" style="background:#22c55e" onclick="exportToExcel()">📊 Export XLSX</button>
+        <button class="btn" style="background:#ef4444" onclick="clearTable()">🗑️ Clear</button>
     </div>
 
-    <div id="auditPanel" style="padding: 0 35px 10px 35px; background: rgba(0,0,0,0.1); display:none;">
-        <div id="symbolList" style="display:flex; gap:10px; flex-wrap:wrap;"></div>
+    <div id="auditPanel" style="display:none;">
+        <div class="symbol-tags">
+            <span class="tag-label">Separators Detected:</span>
+            <div id="symbolList" style="display:flex; gap:8px;"></div>
+        </div>
     </div>
 
     <div class="table-area">
         <table id="dataTable">
             <thead id="tableHead">
                 <tr id="tableHeader">
-                    <th style="width:50px;">#</th>
-                    <th contenteditable="true">FIELD 1 <button class="col-del" onclick="deleteColumn(this)">×</button></th>
+                    <th style="width:60px;">#</th>
+                    <th><div class="th-content"><span contenteditable="true">FIELD 1</span><button class="col-del" onclick="deleteColumn(this)">×</button></div></th>
                     <th style="width:250px;">PREVIEW</th>
                 </tr>
             </thead>
@@ -209,7 +201,7 @@
 
     document.getElementById('fileInput').addEventListener('change', e => {
         const files = e.target.files;
-        if(files.length) processData(files, excelNameInput.value || "Files_Export");
+        if(files.length) processData(files, excelNameInput.value || "New_Project");
     });
 
     function processData(files, sName) {
@@ -219,76 +211,71 @@
             e: f.name.includes('.') ? f.name.split('.').pop() : ""
         }));
 
-        let syms = new Set(['_']);
+        let syms = new Set(['_', '-', ' ']);
         entries.forEach(f => {
             const m = f.n.match(/[^a-zA-Z0-9\s_]/g);
             if(m) m.forEach(s => syms.add(s));
         });
 
-        const randomColor = `hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`;
-
         const session = {
-            id: newId, name: sName, color: randomColor,
+            id: newId, name: sName, 
+            color: `hsl(${Math.floor(Math.random() * 360)}, 75%, 55%)`,
+            headers: ["ROLL NO", "STUDENT NAME", "FATHER NAME", "VILLAGE"],
             files: entries, seps: ['_'], allDetected: Array.from(syms), 
             date: new Date().toLocaleDateString()
         };
 
-        let db = JSON.parse(localStorage.getItem('liquid_pro_db') || "[]");
+        let db = JSON.parse(localStorage.getItem('liquid_ultra_db') || "[]");
         db.unshift(session);
-        localStorage.setItem('liquid_pro_db', JSON.stringify(db));
+        localStorage.setItem('liquid_ultra_db', JSON.stringify(db));
         loadSession(newId);
     }
 
     function loadSession(id) {
-        const db = JSON.parse(localStorage.getItem('liquid_pro_db') || "[]");
+        const db = JSON.parse(localStorage.getItem('liquid_ultra_db') || "[]");
         const s = db.find(item => item.id === id);
         if(!s) return;
 
         activeId = id; selectedSeps = s.seps || ['_'];
         excelNameInput.value = s.name;
-
-        // Change Theme Color Everywhere
         document.documentElement.style.setProperty('--theme-color', s.color);
 
         const escaped = selectedSeps.map(sep => sep.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
         const splitRegex = new RegExp(escaped, 'g');
 
-        // Logic: Find max split parts to create columns
+        // Dynamic Columns Calculation
         let maxParts = 1;
         s.files.forEach(f => {
             const count = f.n.split(splitRegex).length;
             if(count > maxParts) maxParts = count;
         });
 
-        // Rebuild Header Dynamically
-        let headerHtml = `<th style="width:50px;">#</th>`;
-        for(let i=1; i<=maxParts; i++) {
-            headerHtml += `<th contenteditable="true">FIELD ${i} <button class="col-del" onclick="deleteColumn(this)">×</button></th>`;
+        // Build Header
+        let hHtml = `<th style="width:60px;">#</th>`;
+        for(let i=0; i<maxParts; i++) {
+            let title = s.headers[i] || `FIELD ${i+1}`;
+            hHtml += `<th><div class="th-content"><span contenteditable="true" oninput="autoSave()">${title}</span><button class="col-del" onclick="deleteColumn(this)">×</button></div></th>`;
         }
-        headerHtml += `<th style="width:250px;">RENAME PREVIEW</th>`;
-        tableHeader.innerHTML = headerHtml;
+        hHtml += `<th style="width:280px;">RENAME PREVIEW</th>`;
+        tableHeader.innerHTML = hHtml;
 
-        // Build Body
+        // Build Table Rows
         tableBody.innerHTML = "";
         s.files.forEach(f => {
             const parts = f.n.split(splitRegex);
             const tr = document.createElement('tr');
             let rowHtml = `<td style="color:#94a3b8; font-weight:800; text-align:center;"></td>`;
-            
-            for(let i=0; i<maxParts; i++) {
-                rowHtml += `<td contenteditable="true">${parts[i] || ""}</td>`;
-            }
-
-            const previewName = parts.filter(p => p.trim() !== "").join(selectedSeps[0] || "_") + (f.e ? "." + f.e : "");
-            rowHtml += `<td class="preview-col">${previewName}</td>`;
+            for(let i=0; i<maxParts; i++) rowHtml += `<td>${parts[i] || ""}</td>`;
+            const preview = parts.filter(p => p.trim() !== "").join(selectedSeps[0] || "_") + (f.e ? "." + f.e : "");
+            rowHtml += `<td class="preview-col">${preview}</td>`;
             tr.innerHTML = rowHtml;
             tableBody.appendChild(tr);
         });
 
+        // Show Audit Panel
         document.getElementById('auditPanel').style.display = 'block';
         document.getElementById('symbolList').innerHTML = s.allDetected.map(sym => `
-            <span class="btn ${selectedSeps.includes(sym) ? 'active' : ''}" 
-                  style="background:${selectedSeps.includes(sym) ? 'white' : 'rgba(255,255,255,0.1)'}; color:${selectedSeps.includes(sym) ? '#000' : '#fff'}"
+            <span class="sep-chip ${selectedSeps.includes(sym) ? 'active' : ''}" 
                   onclick="toggleSep('${sym}')">${sym === ' ' ? 'Space' : sym}</span>
         `).join('');
 
@@ -297,82 +284,81 @@
     }
 
     function toggleSep(sym) {
-        let db = JSON.parse(localStorage.getItem('liquid_pro_db') || "[]");
+        let db = JSON.parse(localStorage.getItem('liquid_ultra_db') || "[]");
         const idx = db.findIndex(s => s.id === activeId);
         if(idx !== -1) {
             let list = db[idx].seps || [];
-            if(list.includes(sym)) list = list.filter(s => s !== sym);
-            else list.push(sym);
+            list.includes(sym) ? list = list.filter(s => s !== sym) : list.push(sym);
             db[idx].seps = list;
-            localStorage.setItem('liquid_pro_db', JSON.stringify(db));
+            localStorage.setItem('liquid_ultra_db', JSON.stringify(db));
             loadSession(activeId);
         }
     }
 
-    function updateSN() {
-        Array.from(tableBody.querySelectorAll('tr')).forEach((r, i) => r.cells[0].innerText = i + 1);
-    }
-
     function deleteColumn(btn) {
-        const idx = btn.parentElement.cellIndex;
-        btn.parentElement.remove();
+        const cell = btn.closest('th');
+        const idx = cell.cellIndex;
+        cell.remove();
         Array.from(tableBody.querySelectorAll('tr')).forEach(tr => tr.deleteCell(idx));
+        autoSave();
     }
 
     function addNewColumn() {
+        if(!activeId) return;
         const th = document.createElement('th');
-        th.contentEditable = true;
-        th.innerHTML = `NEW FIELD <button class="col-del" onclick="deleteColumn(this)">×</button>`;
+        th.innerHTML = `<div class="th-content"><span contenteditable="true">NEW FIELD</span><button class="col-del" onclick="deleteColumn(this)">×</button></div>`;
         tableHeader.insertBefore(th, tableHeader.lastElementChild);
         Array.from(tableBody.querySelectorAll('tr')).forEach(tr => {
             const td = document.createElement('td');
-            td.contentEditable = true;
             tr.insertBefore(td, tr.lastElementChild);
         });
+        autoSave();
+    }
+
+    function exportToExcel() {
+        if(!activeId) return;
+        const clone = document.getElementById("dataTable").cloneNode(true);
+        clone.querySelectorAll('button').forEach(b => b.remove()); // Clean export
+        XLSX.writeFile(XLSX.utils.table_to_book(clone), `${excelNameInput.value}.xlsx`);
     }
 
     function renderHistory() {
         const list = document.getElementById('historyList');
-        const db = JSON.parse(localStorage.getItem('liquid_pro_db') || "[]");
+        const db = JSON.parse(localStorage.getItem('liquid_ultra_db') || "[]");
         list.innerHTML = db.map(s => `
             <div class="history-item" style="background:${s.color}" onclick="loadSession(${s.id})">
                 <span class="del-history" onclick="removeHistory(event, ${s.id})">×</span>
                 <b>${s.name}</b>
-                <small>📅 ${s.date} | 📂 ${s.files.length} Items</small>
+                <small>📅 ${s.date} | 📂 ${s.files.length} Files</small>
             </div>
         `).join('');
     }
 
     function removeHistory(e, id) {
         e.stopPropagation();
-        const db = JSON.parse(localStorage.getItem('liquid_pro_db') || "[]").filter(s => s.id !== id);
-        localStorage.setItem('liquid_pro_db', JSON.stringify(db));
+        const db = JSON.parse(localStorage.getItem('liquid_ultra_db') || "[]").filter(s => s.id !== id);
+        localStorage.setItem('liquid_ultra_db', JSON.stringify(db));
         if(activeId === id) location.reload();
         renderHistory();
     }
 
+    function autoSave() {
+        if(!activeId) return;
+        let db = JSON.parse(localStorage.getItem('liquid_ultra_db') || "[]");
+        const idx = db.findIndex(s => s.id === activeId);
+        if(idx !== -1) {
+            db[idx].name = excelNameInput.value;
+            db[idx].headers = Array.from(tableHeader.querySelectorAll('.th-content span')).map(s => s.innerText);
+            localStorage.setItem('liquid_ultra_db', JSON.stringify(db));
+        }
+    }
+
+    function updateSN() { Array.from(tableBody.querySelectorAll('tr')).forEach((r, i) => r.cells[0].innerText = i + 1); }
     function searchData() {
         const q = document.getElementById('searchBox').value.toLowerCase();
         Array.from(tableBody.querySelectorAll('tr')).forEach(tr => tr.style.display = tr.innerText.toLowerCase().includes(q) ? "" : "none");
     }
-
-    function clearTable() { tableBody.innerHTML = ""; activeId = null; }
-
-function exportToExcel() {
-    if(!activeId) return;
-
-    // [बदलाव 1]: असली टेबल की एक कॉपी (Clone) बनाई
-    const clone = document.getElementById("dataTable").cloneNode(true);
-
-    // [बदलाव 2]: उस कॉपी में जितने भी <button> (× वाले) थे, उन्हें डिलीट कर दिया
-    // इससे असली वेबसाइट पर बटन नहीं हटेंगे, सिर्फ एक्सेल के लिए हटेंगे
-    clone.querySelectorAll('button').forEach(btn => btn.remove());
-
-    // [बदलाव 3]: अब साफ़ की हुई कॉपी (Clone) से एक्सेल बनाया
-    const wb = XLSX.utils.table_to_book(clone);
-    
-    XLSX.writeFile(wb, `${excelNameInput.value || 'Data'}.xlsx`);
-}
+    function clearTable() { tableBody.innerHTML = ""; activeId = null; document.getElementById('auditPanel').style.display='none'; }
 
     window.onload = renderHistory;
 </script>
